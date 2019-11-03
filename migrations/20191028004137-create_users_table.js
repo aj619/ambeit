@@ -87,6 +87,11 @@ module.exports = {
         engine: 'InnoDB', // default: 'InnoDB'
         charset: 'utf8', // default: null
         paranoid: true,
+        uniqueKeys: {
+          id_email_unique: {
+            fields: ['id', 'email']
+          }
+        }
       })
   },
 

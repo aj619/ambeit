@@ -18,6 +18,16 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: true
 		},
 
+		mainImageUrl: {
+			type: DataTypes.TEXT,
+			allowNull: true
+		},
+
+		multiImage: {
+			type: DataTypes.JSON,
+			allowNull: true
+		},
+
 		tag: {
 			type: DataTypes.STRING,
 			allowNull: false

@@ -1,7 +1,10 @@
 'use strict';
 console.log('USER MODEL INITIALIZED');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+
 module.exports = (sequelize, DataTypes) => {
-	const User = sequelize.define('User', {
+	var User = sequelize.define('User', {
 		id: {
 			type: DataTypes.INTEGER.UNSIGNED,
 			primaryKey: true,
@@ -80,6 +83,13 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.DATE
 		},
 	}, {
+		indexes: [
+			{
+				unique: true,
+				fields: ['email', 'id']
+			}
+		],
+
 		getterMethods: {
 			fullName: function () {
 				return this.fname + ' ' + this.lname
@@ -104,7 +114,7 @@ module.exports = (sequelize, DataTypes) => {
 
 		// don't use camelcase for automatically added attributes but underscore style
 		// so updatedAt will be updated_at
-		underscored: true,
+		underscored: false,
 
 		// disable the modification of table names; By default, sequelize will automatically
 		// transform all passed model names (first parameter of define) into plural.
@@ -117,5 +127,35 @@ module.exports = (sequelize, DataTypes) => {
 	User.associate = function (models) {
 		// associations can be defined here
 	};
+	User.fetch = async (limit = 10, offset = 0, query = 'Sal') => {
+		try {
+			let users = await User.findAll({
+				limit: limit, 
+				offset: offset, 
+				where: {
+					[Op.or]: 
+					[
+						{
+							fname: { 
+								[Op.like] : '%' + query + '%'
+							},
+						}, {
+							lname: { 
+								[Op.like] : '%' + query + '%'
+							},
+						}, {
+							email: { 
+								[Op.like] : '%' + query + '%'
+							},
+						}
+					] 
+				}
+			});
+			return {status: 'OK', data : users};
+		} catch(e) {
+			console.log('error :: ', e);
+			return {status: 'ERR', data : e};
+		}
+	}
 	return User;
 }
